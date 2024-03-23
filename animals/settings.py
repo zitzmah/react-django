@@ -27,14 +27,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-a2ogqx%$3(qmfz_2-fh5v$@od*p(n5m0!dl&opq*@es++nl&!z'
+SECRET_KEY = os.environ.get("SECRET_KEY", "localkey2024") #replace the SECRET_KEY VARIABLE with this. this means the secret_key is localkey2024, if an environment variable isnt specified. we are going to specify one on render.com
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =  'RENDER' not in os.environ  # replace the DEBUG variable with this. This means: If RENDER env var is set, DEBUG is False.when deployed to render.com this is always set by default from render.com
 
 ALLOWED_HOSTS = []
 
-
+#right below the ALLOW_HOST  variable add this.
+## Handling Allowed Hosts on Render
+## adds the render.com hostname to be in ALLOWED_HOSTS
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
 # Application definition
 
 INSTALLED_APPS = [
@@ -46,17 +51,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'pets.apps.PetsConfig',
     'rest_framework',    
+    "corsheaders", #add this below all the other apps
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    "corsheaders.middleware.CorsMiddleware", #add this!!!!!!
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+#Below variable: MIDDLEWARES add this variable
+CORS_ALLOW_ALL_ORIGINS = True ## Variable CORS_ALLOW_ALL_ORIGINS is set to True to allow unrestricted access to the API.
 
 ROOT_URLCONF = 'animals.urls'
 
